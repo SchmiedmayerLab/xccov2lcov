@@ -58,7 +58,7 @@ jobs:
               -destination ".derivedData" \
               -enableCodeCoverage YES \
               -resultBundlePath "${{ inputs.scheme }}.xcresult"
-      - uses: stanfordbdhg/xccov2lcov@main
+      - uses: SchmiedmayerLab/xccov2lcov@v1
         with:
           xcresult: ${{ inputs.scheme }}.xcresult
       - name: Upload coverage to Codecov
@@ -71,7 +71,7 @@ jobs:
 
 ## Our Research
 
-For more information, check out our website at [biodesigndigitalhealth.stanford.edu](https://biodesigndigitalhealth.stanford.edu).
+For more information, visit the [Schmiedmayer Lab GitHub organization](https://github.com/SchmiedmayerLab).
 
-![Stanford Mussallem Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-light.png#gh-light-mode-only)
-![Stanford Mussallem Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-dark.png#gh-dark-mode-only)
+![Stanford and Stanford Medicine logos](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/stanford-footer-light.png#gh-light-mode-only)
+![Stanford and Stanford Medicine logos](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/stanford-footer-dark.png#gh-dark-mode-only)

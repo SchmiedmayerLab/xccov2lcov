@@ -29,7 +29,7 @@ runs:
         set -e
         # Download the latest precompiled binary
         echo "Downloading latest xccov2lcov release"
-        URL="https://github.com/StanfordBDHG/xccov2lcov/releases/latest/download/xccov2lcov-macos.tar.gz"
+        URL="https://github.com/SchmiedmayerLab/xccov2lcov/releases/latest/download/xccov2lcov-macos.tar.gz"
         curl -f -sL "${URL}" -o xccov2lcov.tar.gz
         # Extract and make executable
         tar -xzf xccov2lcov.tar.gz
