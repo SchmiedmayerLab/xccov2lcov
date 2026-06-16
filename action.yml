@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-name: 'xccov2lcov'
+name: 'xccov2lcov tool'
 description: 'Convert xccov and xcresult data to lcov'
 author: 'Lukas Kollmer <contact@lukaskollmer.de>'
 branding:
