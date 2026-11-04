@@ -19,26 +19,3 @@ jobs:
     uses: SchmiedmayerLab/.github/.github/workflows/action-release-tag.yml@v0.2
     permissions:
       contents: write
-  build-and-upload:
-    name: Build and Upload Binaries
-    runs-on: macos-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "6"
-      - name: Build binary
-        run: swift build -c release --product xccov2lcov
-      - name: Create archive
-        run: |
-          cd .build/release
-          tar -czf xccov2lcov-macos.tar.gz xccov2lcov
-      - name: Upload binary
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload ${{ github.ref_name }} .build/release/xccov2lcov-macos.tar.gz
