@@ -24,6 +24,9 @@ jobs:
   markdown_link_check:
     name: Markdown Link Check
     uses: SchmiedmayerLab/.github/.github/workflows/markdown-links.yml@v0.5
+    permissions:
+      contents: read
+      pull-requests: read
   swift_test:
     name: Swift Test
     uses: SchmiedmayerLab/.github/.github/workflows/swift-test.yml@v0.5
