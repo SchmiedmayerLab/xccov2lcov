@@ -17,13 +17,13 @@ on:
 jobs:
   reuse_action:
     name: REUSE Compliance Check
-    uses: SchmiedmayerLab/.github/.github/workflows/reuse.yml@v0.2
+    uses: SchmiedmayerLab/.github/.github/workflows/reuse.yml@v0.5
   swiftlint:
     name: SwiftLint
-    uses: SchmiedmayerLab/.github/.github/workflows/swiftlint.yml@v0.2
+    uses: SchmiedmayerLab/.github/.github/workflows/swiftlint.yml@v0.5
   markdown_link_check:
     name: Markdown Link Check
-    uses: SchmiedmayerLab/.github/.github/workflows/markdown-links.yml@v0.2
+    uses: SchmiedmayerLab/.github/.github/workflows/markdown-links.yml@v0.5
   swift_test:
     name: Swift Test
     uses: SchmiedmayerLab/.github/.github/workflows/swift-test.yml@v0.5
