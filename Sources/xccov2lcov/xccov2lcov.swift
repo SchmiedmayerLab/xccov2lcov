@@ -5,55 +5,37 @@
 //
 // SPDX-License-Identifier: MIT
 //
-// Originally created by David Whetstone @ Trax Retail, 10/16/19.
-//
 
-import ArgumentParser
 import Foundation
 import XCCovLib
 
 
-struct CmdError: Error, CustomStringConvertible {
-    let description: String
-}
-
-
 @main
-struct xccov2lcov: ParsableCommand { // swiftlint:disable:this type_name
-    @Argument(help: "Input filename (output of `xccov view --report --json file.xcresult`). Omit to read input from STDIN.")
-    var inputFilename: String?
+enum XCCov2LCOV {
+    private static let usage = """
+        USAGE: xccov2lcov [<input-filename>]
+        
+        ARGUMENTS:
+          <input-filename>  Output of `xcrun xccov view --archive --json file.xcresult`. Omit to read from STDIN.
+        
+        """
     
-    @Option(help: "Path to trim from start of paths in input file")
-    var trimPath: String = ""
-    
-    @Option(help: "Targets to include in output (default: all targets)")
-    var targets: [String] = []
-    
-    @Option(help: "mode")
-    var mode: Mode = .simple
-    
-    func run() throws {
-        let data: Data
-        if let inputFilename {
-            guard FileManager().isReadableFile(atPath: inputFilename) else {
-                throw CmdError(description: "Cannot read input file: \(inputFilename)")
-            }
-            data = try Data(contentsOf: URL(fileURLWithPath: inputFilename))
-        } else {
-            data = sequence(first: "", next: { _ in readLine(strippingNewline: false) })
-                .reduce(into: Data()) { data, line in
-                    data.append(contentsOf: line.utf8)
-                }
+    static func main() {
+        let arguments = CommandLine.arguments.dropFirst()
+        guard arguments.count <= 1, arguments.first?.hasPrefix("-") != true else {
+            exit(with: usage)
         }
-        let context = XCCovContext(
-            includedTargets: targets,
-            trimPath: trimPath,
-            mode: mode
-        )
-        let xccovData = try JSONDecoder().decode(XCCovData.self, from: data)
-        print(xccovData.lcov(context: context))
+        do {
+            let input = try arguments.first.map { try Data(contentsOf: URL(fileURLWithPath: $0)) }
+                ?? FileHandle.standardInput.readDataToEndOfFile()
+            FileHandle.standardOutput.write(Data(try lcov(fromArchiveJSON: input).utf8))
+        } catch {
+            exit(with: "error: \(error)\n")
+        }
+    }
+    
+    private static func exit(with message: String) -> Never {
+        FileHandle.standardError.write(Data(message.utf8))
+        Foundation.exit(1)
     }
 }
-
-
-extension Mode: ExpressibleByArgument {}

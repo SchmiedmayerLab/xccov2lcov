@@ -9,9 +9,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-// Originally created by David Whetstone @ Trax Retail, 10/16/19.
-
-
 import PackageDescription
 
 let package = Package(
@@ -19,20 +16,13 @@ let package = Package(
     products: [
         .executable(name: "xccov2lcov", targets: ["xccov2lcov"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0")
-    ],
     targets: [
         .target(
-            name: "XCCovLib",
-            dependencies: []
+            name: "XCCovLib"
         ),
         .executableTarget(
             name: "xccov2lcov",
-            dependencies: [
-                .target(name: "XCCovLib"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]
+            dependencies: ["XCCovLib"]
         ),
         .testTarget(
             name: "XCCovLibTests",

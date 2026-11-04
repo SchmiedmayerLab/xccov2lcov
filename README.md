@@ -10,38 +10,38 @@ SPDX-License-Identifier: MIT
 
 # xccov2lcov
 
-A utility to convert data from Xcode 11's code coverage facility into the `lcov` file format.
+A utility to convert Xcode code coverage data into the `lcov` file format, with one entry per executable line.
 
-Based on [trax-retail/xccov2lcov](https://github.com/trax-retail/xccov2lcov) written by David Whetstone @ [Trax Retail](https://traxretail.com/).
+Originally based on [trax-retail/xccov2lcov](https://github.com/trax-retail/xccov2lcov) written by David Whetstone @ [Trax Retail](https://traxretail.com/).
 
 
 ## Usage: CLI
 
 ```
-USAGE: xccov2lcov [<input-filename>] [--trim-path <trim-path>] [--targets <targets> ...] [--mode <mode>]
+USAGE: xccov2lcov [<input-filename>]
 
 ARGUMENTS:
-  <input-filename>        Input filename (output of `xccov view --report --json file.xcresult`). Omit to read input from STDIN.
-
-OPTIONS:
-  --trim-path <trim-path> Path to trim from start of paths in input file
-  --targets <targets>     Targets to include in output (default: all targets)
-  --mode <mode>           mode (default: simple)
-  -h, --help              Show help information.
+  <input-filename>  Output of `xcrun xccov view --archive --json file.xcresult`. Omit to read from STDIN.
 ```
+
+Download the tool from the [latest release](https://github.com/SchmiedmayerLab/xccov2lcov/releases/latest), or build it with `swift build -c release`.
 
 Given a `Schema.xcresult` file, you can obtain a `lcov` file as follows:
 
 ```
-xcrun xccov view --report --json Schema.xcresult | xccov2lcov > info.lcov
+xcrun xccov view --archive --json Schema.xcresult | xccov2lcov > info.lcov
 ```
 
-The resulting `info.lcov` file can be uploaded to e.g. Codecov. 
+The resulting `info.lcov` file can be uploaded to e.g. Codecov.
+It uses the absolute paths reported by `xccov`, which Codecov maps to the files in your repository.
+
+The tool reads `xccov view --archive` rather than `xccov view --report`, because the report only contains data per function, not per line.
 
 
 ## Usage: GitHub Action
 
-You can also use this tool as a GitHub Action:
+You can also use this tool as a GitHub Action.
+It runs on macOS, and builds the tool using the selected Xcode:
 
 ```yml
 jobs:
@@ -73,5 +73,5 @@ jobs:
 
 For more information, visit the [Schmiedmayer Lab GitHub organization](https://github.com/SchmiedmayerLab).
 
-![Stanford and Stanford Medicine logos](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/stanford-footer-light.png#gh-light-mode-only)
-![Stanford and Stanford Medicine logos](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/stanford-footer-dark.png#gh-dark-mode-only)
+![Schmiedmayer Lab](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/footer-light.png#gh-light-mode-only)
+![Schmiedmayer Lab](https://raw.githubusercontent.com/SchmiedmayerLab/.github/main/assets/footer-dark.png#gh-dark-mode-only)
