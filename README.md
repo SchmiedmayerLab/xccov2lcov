@@ -24,7 +24,7 @@ ARGUMENTS:
   <input-filename>  Output of `xcrun xccov view --archive --json file.xcresult`. Omit to read from STDIN.
 ```
 
-Download the tool from the [latest release](https://github.com/SchmiedmayerLab/xccov2lcov/releases/latest), or build it with `swift build -c release`.
+Build the tool with `swift build -c release`.
 
 Given a `Schema.xcresult` file, you can obtain a `lcov` file as follows:
 
