@@ -24,3 +24,30 @@ jobs:
   markdown_link_check:
     name: Markdown Link Check
     uses: SchmiedmayerLab/.github/.github/workflows/markdown-links.yml@v0.2
+  swift_test:
+    name: Swift Test
+    uses: SchmiedmayerLab/.github/.github/workflows/swift-test.yml@v0.5
+    permissions:
+      contents: read
+  action:
+    name: Action
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - name: Create a result bundle with coverage
+        run: |
+          xcrun xcodebuild test \
+            -scheme xccov2lcov \
+            -destination 'platform=macOS' \
+            -enableCodeCoverage YES \
+            -resultBundlePath Tests.xcresult
+      - uses: ./
+        with:
+          xcresult: Tests.xcresult
+      - name: Check that every executable line is reported
+        run: |
+          expected="$(xcrun xccov view --archive --json Tests.xcresult | jq '[.[][] | select(.isExecutable)] | length')"
+          actual="$(grep -c '^DA:' info.lcov)"
+          echo "Expected $expected lines, found $actual"
+          test "$expected" -gt 0
+          test "$actual" -eq "$expected"

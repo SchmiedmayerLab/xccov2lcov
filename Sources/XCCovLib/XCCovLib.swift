@@ -5,86 +5,45 @@
 //
 // SPDX-License-Identifier: MIT
 //
-// Originally created by David Whetstone @ Trax Retail, 10/16/19.
-//
-
-// swiftlint:disable missing_docs
 
 import Foundation
 
 
-public enum Mode: String {
-    case simple
-    case full
-}
-
-
-public struct XCCovContext {
-    public let includedTargets: [String]
-    public let trimPath: String
-    public let mode: Mode
-    
-    public init(includedTargets: [String] = [], trimPath: String = "", mode: Mode = .simple) {
-        self.includedTargets = includedTargets
-        self.trimPath = trimPath
-        self.mode = mode
+/// Converts the output of `xccov view --archive --json` into an lcov tracefile.
+///
+/// The tracefile has one `DA` entry per executable line. Paths are written as `xccov` reports them.
+/// Files without executable lines are omitted, and the output is sorted so that it is reproducible.
+public func lcov(fromArchiveJSON data: Data) throws -> String {
+    let archive: [String: [SourceLine]]
+    do {
+        archive = try JSONDecoder().decode([String: [SourceLine]].self, from: data)
+    } catch is DecodingError {
+        throw ConversionError.unexpectedFormat
+    }
+    return try archive.keys.sorted().reduce(into: "") { output, path in
+        let lines = archive[path, default: []]
+            .filter(\.isExecutable)
+            .sorted { $0.line < $1.line }
+        guard !lines.isEmpty else {
+            return
+        }
+        var coveredLines = 0
+        output += "SF:\(path)\n"
+        for line in lines {
+            guard let executionCount = line.executionCount else {
+                throw ConversionError.missingExecutionCount(path: path, line: line.line)
+            }
+            coveredLines += executionCount > 0 ? 1 : 0
+            output += "DA:\(line.line),\(executionCount)\n"
+        }
+        output += "LF:\(lines.count)\nLH:\(coveredLines)\nend_of_record\n"
     }
 }
 
 
-extension XCCovData {
-    public func lcov(context: XCCovContext) -> String {
-        includedTargets(context.includedTargets)
-            .map { $0.lcov(context: context) }
-            .joined(separator: "\n")
-    }
-    
-    private func includedTargets(_ includeTargets: [String]) -> [XCCovTarget] {
-        includeTargets.isEmpty
-            ? targets
-            : targets.filter { includeTargets.contains($0.name) }
-    }
-}
-
-
-extension XCCovTarget {
-    public func lcov(context: XCCovContext) -> String {
-        files.map { $0.lcov(context: context) }.joined(separator: "\n")
-    }
-}
-
-
-extension XCCovFile {
-    public func lcov(context: XCCovContext) -> String {
-        let lines = [
-            "SF:\(path.trimmingPrefix(context.trimPath))",
-            "\(functions.map { $0.lcov(context: context) }.joined(separator: "\n"))",
-            context.mode == .full ? "LF:\(executableLines)" : nil,
-            context.mode == .full ? "LH:\(coveredLines)" : nil,
-            "end_of_record"
-        ]
-        return lines
-            .compactMap { $0 }
-            .joined(separator: "\n")
-    }
-}
-
-
-extension XCCovFunction {
-    private var namedFunction: String {
-        """
-        FN:\(lineNumber),\(name)
-        FNDA:\(executionCount),\(name)
-        FNF:\(executableLines)
-        FNH:\(coveredLines)
-        """
-    }
-    
-    private var unnamedFunction: String {
-        "DA:\(lineNumber),\(executionCount)"
-    }
-    
-    public func lcov(context: XCCovContext) -> String {
-        name.isEmpty || context.mode == .simple ? unnamedFunction : namedFunction
-    }
+/// One line of a source file, as reported by `xccov view --archive --json`.
+private struct SourceLine: Decodable {
+    let line: Int
+    let isExecutable: Bool
+    let executionCount: Int?
 }
