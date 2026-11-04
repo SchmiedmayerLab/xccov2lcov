@@ -32,8 +32,8 @@ jobs:
     uses: SchmiedmayerLab/.github/.github/workflows/swift-test.yml@v0.5
     permissions:
       contents: read
-  result_bundle:
-    name: Result Bundle
+  action:
+    name: Action
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v7
@@ -44,9 +44,9 @@ jobs:
             -destination 'platform=macOS' \
             -enableCodeCoverage YES \
             -resultBundlePath Tests.xcresult
-      # The action downloads the latest release, which doesn't contain the code under review.
-      - name: Convert the result bundle
-        run: xcrun xccov view --archive --json Tests.xcresult | xcrun swift run --quiet xccov2lcov > info.lcov
+      - uses: ./
+        with:
+          xcresult: Tests.xcresult
       - name: Check that every executable line is reported
         run: |
           expected="$(xcrun xccov view --archive --json Tests.xcresult | jq '[.[][] | select(.isExecutable)] | length')"

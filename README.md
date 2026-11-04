@@ -40,7 +40,8 @@ The tool reads `xccov view --archive` rather than `xccov view --report`, because
 
 ## Usage: GitHub Action
 
-You can also use this tool as a GitHub Action:
+You can also use this tool as a GitHub Action.
+It runs on macOS, and builds the tool using the selected Xcode:
 
 ```yml
 jobs:
