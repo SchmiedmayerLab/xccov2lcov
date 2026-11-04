@@ -24,7 +24,7 @@ ARGUMENTS:
   <input-filename>  Output of `xcrun xccov view --archive --json file.xcresult`. Omit to read from STDIN.
 ```
 
-There is no prebuilt binary. Build the tool with `swift build -c release`; `swift build -c release --show-bin-path` prints where it is.
+Download the tool from the [latest release](https://github.com/SchmiedmayerLab/xccov2lcov/releases/latest), or build it with `swift build -c release`.
 
 Given a `Schema.xcresult` file, you can obtain a `lcov` file as follows:
 
@@ -40,8 +40,7 @@ The tool reads `xccov view --archive` rather than `xccov view --report`, because
 
 ## Usage: GitHub Action
 
-You can also use this tool as a GitHub Action.
-It runs on macOS, and builds the tool using the selected Xcode:
+You can also use this tool as a GitHub Action:
 
 ```yml
 jobs:

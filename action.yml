@@ -23,17 +23,21 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Download xccov2lcov
+      shell: bash
+      run: |
+        set -e
+        # Download the latest precompiled binary
+        echo "Downloading latest xccov2lcov release"
+        URL="https://github.com/SchmiedmayerLab/xccov2lcov/releases/latest/download/xccov2lcov-macos.tar.gz"
+        curl -f -sL "${URL}" -o xccov2lcov.tar.gz
+        # Extract and make executable
+        tar -xzf xccov2lcov.tar.gz
+        chmod +x xccov2lcov
+        # Add the binary's location to the PATH for subsequent steps
+        echo XCCOV2lCOV_BINARY="$(pwd -L)/xccov2lcov" >> $GITHUB_ENV
+        echo "Downloaded xccov2lcov to $(pwd -L)/xccov2lcov"
     - name: Run xccov2lcov
       shell: bash
-      env:
-        XCRESULT: ${{ inputs.xcresult }}
-        OUTPUT: ${{ inputs.output }}
-      # The tool is built from the action's own sources, so it always matches this version of the action.
       run: |
-        xcrun xccov view --archive --json "$XCRESULT" \
-          | xcrun swift run --quiet \
-            --package-path "$GITHUB_ACTION_PATH" \
-            --scratch-path "$RUNNER_TEMP/xccov2lcov" \
-            --configuration release \
-            xccov2lcov \
-          > "$OUTPUT"
+        xcrun xccov view --archive --json ${{ inputs.xcresult }} | $XCCOV2lCOV_BINARY > ${{ inputs.output }}
