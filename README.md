@@ -24,10 +24,12 @@ ARGUMENTS:
   <input-filename>  Output of `xcrun xccov view --archive --json file.xcresult`. Omit to read from STDIN.
 ```
 
+There is no prebuilt binary. Build the tool with `swift build -c release`; `swift build -c release --show-bin-path` prints where it is.
+
 Given a `Schema.xcresult` file, you can obtain a `lcov` file as follows:
 
 ```
-xcrun xccov view --archive --json Schema.xcresult | swift run xccov2lcov > info.lcov
+xcrun xccov view --archive --json Schema.xcresult | xccov2lcov > info.lcov
 ```
 
 The resulting `info.lcov` file can be uploaded to e.g. Codecov.
